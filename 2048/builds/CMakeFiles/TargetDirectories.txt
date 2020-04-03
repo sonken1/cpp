@@ -1,0 +1,3 @@
+/home/elias/sharedfolder/2048/builds/CMakeFiles/rebuild_cache.dir
+/home/elias/sharedfolder/2048/builds/CMakeFiles/main.dir
+/home/elias/sharedfolder/2048/builds/CMakeFiles/edit_cache.dir
