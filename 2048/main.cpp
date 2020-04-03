@@ -48,6 +48,7 @@ class Game
             cout << endl;
         }
         cout << "+------+------+------+------+" << endl << endl;
+        cout << "SCORE: " << score << endl;
 	}
 
     void addTile(bool isFirst=false)
@@ -123,6 +124,7 @@ class Game
                         board[row - 1][col].moved = true;
                         board[row][col].val = 0;
                         board[row][col].occupied = false;
+                        score += board[row - 1][col].val;
                         }
                     }
                     else
@@ -154,6 +156,7 @@ class Game
                         board[row + 1][col].moved = true;
                         board[row][col].val = 0;
                         board[row][col].occupied = false;
+                        score += board[row + 1][col].val;
                         }
                     }
                     else
@@ -185,6 +188,7 @@ class Game
                         board[row][col - 1].moved = true;
                         board[row][col].val = 0;
                         board[row][col].occupied = false;
+                        score += board[row][col - 1].val;
                         }
                     }
                     else
@@ -216,6 +220,7 @@ class Game
                         board[row][col + 1].moved = true;
                         board[row][col].val = 0;
                         board[row][col].occupied = false;
+                        score += board[row][col + 1].val;
                         }
                     }
                     else
@@ -259,12 +264,59 @@ class Game
             break;
         }
     }
+
+    void updateGameState()
+    {
+        bool testGame = true;
+        bool testWon = false;
+        for (int row = 0; row < 4; row ++)
+        {
+            for (int col = 0; col < 4; col ++)
+            {
+                if (!board[row][col].occupied)
+                {
+                    testGame = false;
+                    break;
+                }
+            }
+        }
+        game_over = testGame;
+        for (int row = 0; row < 4; row ++)
+        {
+            for (int col = 0; col < 4; col ++)
+            {
+                if (board[row][col].val >= 2048)
+                {
+                    testWon = true;
+                    break;
+                }
+            }
+        }
+        won = testWon;
+    }
+
+    void gameLoop()
+    {
+        addTile(true);
+        displayBoard();
+        char input;
+        while (!game_over || !won)
+        {
+            addTile();
+            cout << "INPUT MOVE, W (up), A (left), S (down), D (right): ..." << endl;
+            cin >> input;
+            moveTiles(input);
+            updateGameState();
+            displayBoard();
+        }
+        
+    }
 };
 
 
 int main()
 {
-    Game G;
+    /*Game G;
     //G.addTile(true);
     //G.addTile();
     G.board[0][0].val = 4;
@@ -291,6 +343,8 @@ int main()
     G.moveTiles('D');
     G.displayBoard();
     G.moveTiles('D');
-    G.displayBoard();
+    G.displayBoard();*/
+    Game G;
+    G.gameLoop();
     return 0;
 }
