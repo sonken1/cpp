@@ -4,4 +4,4 @@ project(2048proj CXX)
 
 #set(CPP_SOURCE_FILES function.cpp)
 # )
-add_executable(main main.cpp) # ${CPP_SOURCE_FILES})
+add_executable(main main.cpp)# ${CPP_SOURCE_FILES})

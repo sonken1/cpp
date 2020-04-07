@@ -83,33 +83,17 @@ class Game
     void addTile(bool isFirst=false)
     {
         int val, percent, row, col;
-
-        if (isFirst)
+        std::vector<Vec2D> unoccupiedVector = findUnoccupiedTiles();
+        int nbrUnocc = unoccupiedVector.size();
+        if (nbrUnocc > 0)
         {
-            srand (time(NULL));
-            percent = rand()% 100;
-            row = rand()% 4;
-            col = rand()% 4;
-            if (percent < 65)
-            {
-                val = 2;
-            }
-            else
-            {
-                val = 4;
-            }
-            board[row][col].val = val;
-            board[row][col].occupied = true;
-        }        
-
-        else
-        {
-            srand (time(NULL));
-            percent = rand()% 100;
-            if (percent < 75)
+            if (isFirst)
             {
                 srand (time(NULL));
-                if (percent < 60)
+                percent = rand()% 100;
+                row = rand()% 4;
+                col = rand()% 4;
+                if (percent < 65)
                 {
                     val = 2;
                 }
@@ -117,18 +101,34 @@ class Game
                 {
                     val = 4;
                 }
-                std::vector<Vec2D> unoccupiedVector = findUnoccupiedTiles();
-                int nbrUnocc = unoccupiedVector.size();
-                srand (time(NULL));
-                int RandIndex = rand()% nbrUnocc;
-                row = unoccupiedVector[RandIndex].x;
-                col = unoccupiedVector[RandIndex].y;
-
                 board[row][col].val = val;
                 board[row][col].occupied = true;
+            }        
+
+            else
+            {
+                srand (time(NULL));
+                percent = rand()% 100;
+                if (percent < 75)
+                {
+                    srand (time(NULL));
+                    if (percent < 60)
+                    {
+                        val = 2;
+                    }
+                    else
+                    {
+                        val = 4;
+                    }
+                    srand (time(NULL));
+                    int RandIndex = rand()% nbrUnocc;
+                    row = unoccupiedVector[RandIndex].x;
+                    col = unoccupiedVector[RandIndex].y;
+                    board[row][col].val = val;
+                    board[row][col].occupied = true;
+                }
             }
         }
-        cout << "ROW: " << row << ". COL: " << col << endl;
     }
 
     void resetMoved()
@@ -299,6 +299,38 @@ class Game
         }
     }
 
+    bool compareVals(int row, int col)
+    {
+        if (row == 0)
+        {
+            if (board[row+1][col].val == board[row][col].val){return true;}
+        }
+        else if (row == 3)
+        {
+            if (board[row-1][col].val == board[row][col].val){return false;}
+        }
+        else
+        {
+            if (board[row+1][col].val == board[row][col].val){return false;}
+            else if(board[row-1][col].val == board[row][col].val){return false;}
+        }
+
+        if (col == 0)
+        {
+            if (board[row][col+1].val == board[row][col].val){return false;}
+        }
+        else if (col == 3)
+        {
+            if (board[row][col-1].val == board[row][col].val){return false;}
+        }
+        else
+        {
+            if (board[row][col+1].val == board[row][col].val){return false;}
+            else if(board[row][col-1].val == board[row][col].val){return false;}
+        }
+        return true;        
+    }
+
     void updateGameState()
     {
         bool testGame = true;
@@ -312,6 +344,7 @@ class Game
                     testGame = false;
                     break;
                 }
+                else if(!compareVals(row, col)){testGame = false; break;}                
             }
         }
         game_over = testGame;
@@ -334,50 +367,24 @@ class Game
         addTile(true);
         displayBoard();
         char input;
-        while (!game_over || !won)
+        updateGameState();
+        while (!game_over && !won)
         {
             cout << "INPUT MOVE, W (up), A (left), S (down), D (right): ..." << endl;
             cin >> input;
             moveTiles(input);
             addTile();
             updateGameState();
-            displayBoard();
+            displayBoard();            
         }
-        
+        string wonString;
+        (won ? cout<<"You Won, ya' cheeky bastard" : cout<<"GAME OVER");
     }
 };
 
 
 int main()
 {
-    /*Game G;
-    //G.addTile(true);
-    //G.addTile();
-    G.board[0][0].val = 4;
-    G.board[0][0].occupied = true;
-    G.board[1][0].val = 4;
-    G.board[1][0].occupied = true;
-    G.board[2][0].val = 8;
-    G.board[2][0].occupied = true;
-    G.board[3][0].val = 4;
-    G.board[3][0].occupied = true;
-    G.board[0][1].val = 2;
-    G.board[0][1].occupied = true;
-    G.board[1][1].val = 4;
-    G.board[1][1].occupied = true;
-    G.board[2][1].val = 4;
-    G.board[2][1].occupied = true;
-    G.board[3][1].val = 8;
-    G.board[3][1].occupied = true;
-    G.board[3][2].val = 4;
-    G.board[3][2].occupied = true;
-    G.board[3][3].val = 4;
-    G.board[3][3].occupied = true;
-    G.displayBoard();
-    G.moveTiles('D');
-    G.displayBoard();
-    G.moveTiles('D');
-    G.displayBoard();*/
     Game G;
     G.gameLoop();
     return 0;
