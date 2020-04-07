@@ -5,6 +5,19 @@
 
 using namespace std;
 
+
+struct Vec2D
+{
+    int x;
+    int y;
+
+    void print()
+    {
+        std::cout << "{" << x << ", " << y << "}";
+    }
+
+};
+
 class tile
 {
 public:
@@ -51,6 +64,22 @@ class Game
         cout << "SCORE: " << score << endl;
 	}
 
+    std::vector<Vec2D> findUnoccupiedTiles()
+    {
+        std::vector<Vec2D> returnVector;
+        for (int row = 0; row < 4; row ++)
+        {
+            for (int col = 0; col < 4; col ++)
+            {
+                if (!board[row][col].occupied)
+                {
+                    returnVector.push_back({row, col});
+                }
+            }
+        }
+        return returnVector;
+    }
+
     void addTile(bool isFirst=false)
     {
         int val, percent, row, col;
@@ -71,7 +100,7 @@ class Game
             }
             board[row][col].val = val;
             board[row][col].occupied = true;
-        }
+        }        
 
         else
         {
@@ -80,8 +109,6 @@ class Game
             if (percent < 75)
             {
                 srand (time(NULL));
-                row = rand()% 4;
-                col = rand()% 4;
                 if (percent < 60)
                 {
                     val = 2;
@@ -90,11 +117,18 @@ class Game
                 {
                     val = 4;
                 }
+                std::vector<Vec2D> unoccupiedVector = findUnoccupiedTiles();
+                int nbrUnocc = unoccupiedVector.size();
+                srand (time(NULL));
+                int RandIndex = rand()% nbrUnocc;
+                row = unoccupiedVector[RandIndex].x;
+                col = unoccupiedVector[RandIndex].y;
+
                 board[row][col].val = val;
                 board[row][col].occupied = true;
             }
         }
-        
+        cout << "ROW: " << row << ". COL: " << col << endl;
     }
 
     void resetMoved()
@@ -302,10 +336,10 @@ class Game
         char input;
         while (!game_over || !won)
         {
-            addTile();
             cout << "INPUT MOVE, W (up), A (left), S (down), D (right): ..." << endl;
             cin >> input;
             moveTiles(input);
+            addTile();
             updateGameState();
             displayBoard();
         }
